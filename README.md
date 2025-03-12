@@ -133,19 +133,116 @@ The application uses the following main tables:
 - `store_hours_config`: Stores the operating hours configuration
 - `users`: Stores admin user information
 
-## Testing
+## Testing (TDD)
 
-To run the test suite:
+This project follows Test-Driven Development (TDD) principles. The test suite includes unit tests, feature tests, and integration tests.
 
-### Docker:
+### Running Tests
+
+#### Using Docker:
 ```bash
+# Run all tests
 docker-compose exec app php artisan test
+
+# Run specific test class
+docker-compose exec app php artisan test --filter=StoreHoursServiceTest
+
+# Run with coverage report (requires Xdebug)
+docker-compose exec app php artisan test --coverage
 ```
 
-### XAMPP:
+#### Using XAMPP:
 ```bash
+# Run all tests
 php artisan test
+
+# Run specific test class
+php artisan test --filter=StoreHoursServiceTest
+
+# Run with coverage report (requires Xdebug)
+php artisan test --coverage
 ```
+
+### Test Structure
+
+```
+tests/
+├── Feature/                    # Feature tests
+│   ├── Auth/                  # Authentication tests
+│   ├── StoreHoursConfigControllerTest.php
+│   └── StoreHoursControllerTest.php
+└── Unit/                      # Unit tests
+    └── StoreHoursServiceTest.php
+```
+
+### Key Test Cases
+
+1. **Store Hours Service Tests** (`tests/Unit/StoreHoursServiceTest.php`)
+   - Current store status
+   - Lunch break handling
+   - Alternate week Saturday logic
+   - Next opening time calculation
+   - Date-specific status checks
+
+2. **Store Hours Controller Tests** (`tests/Feature/StoreHoursControllerTest.php`)
+   - Status endpoint
+   - Date checking endpoint
+   - Weekly schedule endpoint
+   - Response format validation
+
+3. **Config Controller Tests** (`tests/Feature/StoreHoursConfigControllerTest.php`)
+   - Configuration retrieval
+   - Update operations
+   - Validation rules
+   - Authorization checks
+
+### Creating New Tests
+
+1. Generate a test class:
+```bash
+# Feature test
+php artisan make:test NewFeatureTest
+
+# Unit test
+php artisan make:test NewUnitTest --unit
+```
+
+2. Follow TDD cycle:
+   - Write failing test
+   - Implement feature
+   - Refactor code
+   - Verify passing test
+
+### Example Test
+
+```php
+public function test_get_current_status_when_store_is_open()
+{
+    // Arrange
+    $config = StoreHoursConfig::factory()->create([
+        'day_of_week' => Carbon::now()->format('l'),
+        'is_open' => true,
+        'opening_time' => '08:00:00',
+        'closing_time' => '16:00:00'
+    ]);
+
+    // Act
+    $status = $this->service->getCurrentStatus();
+
+    // Assert
+    $this->assertTrue($status['is_open']);
+    $this->assertEquals('Store is open', $status['message']);
+}
+```
+
+### Test Coverage
+
+To ensure comprehensive test coverage, tests are written for:
+- ✅ All public methods in services
+- ✅ All API endpoints
+- ✅ Edge cases and error scenarios
+- ✅ Authentication and authorization
+- ✅ Data validation
 
 ## Development
 
