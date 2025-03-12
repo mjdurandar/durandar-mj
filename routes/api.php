@@ -1,8 +1,6 @@
 <?php
 
 use App\Http\Controllers\Api\StoreHoursController;
-use App\Http\Controllers\Api\Admin\StoreHoursConfigController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,10 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 // Public store hours endpoints
 Route::prefix('store-hours')->group(function () {
     Route::get('status', [StoreHoursController::class, 'getCurrentStatus']);
@@ -27,12 +21,4 @@ Route::prefix('store-hours')->group(function () {
     Route::get('check-date/{date}', [StoreHoursController::class, 'checkDateStatus']);
     Route::get('schedule', [StoreHoursController::class, 'getWeeklySchedule']);
     Route::get('week', [StoreHoursController::class, 'getWeeklySchedule']); // Alias for schedule
-});
-
-// Admin store hours configuration endpoints
-Route::prefix('admin/store-hours')
-    ->middleware(['auth:sanctum'])
-    ->group(function () {
-        Route::get('/', [StoreHoursConfigController::class, 'index']);
-        Route::put('/{config}', [StoreHoursConfigController::class, 'update']);
-    }); 
+}); 

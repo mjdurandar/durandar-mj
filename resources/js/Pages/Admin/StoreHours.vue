@@ -116,16 +116,20 @@ const page = usePage()
 
 // Add CSRF token to all requests
 axios.defaults.headers.common['X-CSRF-TOKEN'] = page.props.csrf_token
+axios.defaults.withCredentials = true // Enable credentials
 
 const fetchConfigs = async () => {
     error.value = null
     try {
-        const response = await axios.get('/api/admin/store-hours')
+        const response = await axios.get('/admin/api/store-hours')
         configs.value = response.data
-        console.log('Fetched configs:', configs.value) // Debug log
     } catch (err) {
         console.error('Error fetching store hours:', err)
-        error.value = 'Failed to load store hours configuration. Please refresh the page.'
+        if (err.response?.status === 401) {
+            window.location.href = '/login'
+        } else {
+            error.value = 'Failed to load store hours configuration. Please refresh the page.'
+        }
     }
 }
 
@@ -133,13 +137,17 @@ const saveChanges = async () => {
     isSaving.value = true
     error.value = null
     try {
-        await axios.post('/api/admin/store-hours/bulk-update', {
+        await axios.post('/admin/api/store-hours/bulk-update', {
             configs: configs.value
         })
         alert('Store hours updated successfully!')
     } catch (err) {
         console.error('Error updating store hours:', err)
-        error.value = 'Failed to update store hours. Please try again.'
+        if (err.response?.status === 401) {
+            window.location.href = '/login'
+        } else {
+            error.value = 'Failed to update store hours. Please try again.'
+        }
     } finally {
         isSaving.value = false
     }

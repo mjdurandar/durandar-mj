@@ -35,7 +35,7 @@ class StoreHoursService
             if ($weekNumber % 2 !== 0) { // Closed on odd weeks
                 return [
                     'is_open' => false,
-                    'message' => 'Alternate week',
+                    'message' => 'Store is closed on Alternate week',
                     'next_opening' => $this->getNextOpeningTime(),
                     'next_opening_friendly' => $this->getNextOpeningTimeFriendly()
                 ];
@@ -207,7 +207,9 @@ class StoreHoursService
             if ($weekNumber % 2 !== 0) {
                 return [
                     'is_open' => false,
-                    'message' => "Store is closed on this Saturday (Alternate week)"
+                    'message' => "Store is closed on this Saturday (Alternate week)",
+                    'next_opening' => $this->getNextOpeningTime(),
+                    'next_opening_friendly' => $this->getNextOpeningTimeFriendly()
                 ];
             }
         }

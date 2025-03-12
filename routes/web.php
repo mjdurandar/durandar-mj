@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Api\Admin\StoreHoursConfigController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,6 +28,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/store-hours', function () {
             return Inertia::render('Admin/StoreHours');
         })->name('admin.store-hours');
+
+        // Admin API endpoints
+        Route::prefix('api')->group(function () {
+            Route::get('/store-hours', [StoreHoursConfigController::class, 'index']);
+            Route::post('/store-hours/bulk-update', [StoreHoursConfigController::class, 'bulkUpdate']);
+            Route::put('/store-hours/{config}', [StoreHoursConfigController::class, 'update']);
+        });
     });
 });
 
