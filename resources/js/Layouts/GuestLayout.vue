@@ -8,7 +8,7 @@ import { Link } from '@inertiajs/vue3';
     >
         <div>
             <Link href="/" class="text-3xl font-bold text-gray-900 hover:text-gray-700">
-                Bakery Hours System
+                Amy & Dave's Bakery Hours System
             </Link>
         </div>
 

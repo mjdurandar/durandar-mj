@@ -38,7 +38,7 @@ defineProps({
 
             <div class="max-w-7xl mx-auto p-6 lg:p-8">
                 <div class="flex justify-center">
-                    <h1 class="text-4xl font-bold text-gray-900">Bakery Hours</h1>
+                    <h1 class="text-4xl font-bold text-gray-900">Amy & Dave's Bakery Hours</h1>
                 </div>
 
                 <div class="mt-8">
