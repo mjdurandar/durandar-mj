@@ -12,7 +12,7 @@ class StoreHoursConfigController extends Controller
 {
     public function index(): JsonResponse
     {
-        $configs = StoreHoursConfig::orderBy('FIELD(day_of_week, "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")')
+        $configs = StoreHoursConfig::orderByRaw('FIELD(day_of_week, "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")')
             ->get();
 
         return response()->json($configs);

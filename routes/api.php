@@ -41,11 +41,13 @@ Route::prefix('store-hours')->group(function () {
 });
 
 // Admin store hours configuration endpoints
-Route::prefix('admin/store-hours')->middleware(['auth:sanctum'])->group(function () {
-    Route::get('/', [StoreHoursConfigController::class, 'index']);
-    Route::post('/', [StoreHoursConfigController::class, 'store']);
-    Route::get('/{config}', [StoreHoursConfigController::class, 'show']);
-    Route::put('/{config}', [StoreHoursConfigController::class, 'update']);
-    Route::delete('/{config}', [StoreHoursConfigController::class, 'destroy']);
-    Route::post('/bulk-update', [StoreHoursConfigController::class, 'bulkUpdate']);
-}); 
+Route::prefix('admin/store-hours')
+    ->middleware(['auth:sanctum', 'web'])
+    ->group(function () {
+        Route::get('/', [StoreHoursConfigController::class, 'index']);
+        Route::post('/', [StoreHoursConfigController::class, 'store']);
+        Route::get('/{config}', [StoreHoursConfigController::class, 'show']);
+        Route::put('/{config}', [StoreHoursConfigController::class, 'update']);
+        Route::delete('/{config}', [StoreHoursConfigController::class, 'destroy']);
+        Route::post('/bulk-update', [StoreHoursConfigController::class, 'bulkUpdate']);
+    }); 

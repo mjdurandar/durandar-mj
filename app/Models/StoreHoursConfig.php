@@ -19,10 +19,10 @@ class StoreHoursConfig extends Model
     ];
 
     protected $casts = [
-        'opening_time' => 'datetime',
-        'closing_time' => 'datetime',
-        'lunch_break_start' => 'datetime',
-        'lunch_break_end' => 'datetime',
+        'opening_time' => 'datetime:H:i',
+        'closing_time' => 'datetime:H:i',
+        'lunch_break_start' => 'datetime:H:i',
+        'lunch_break_end' => 'datetime:H:i',
         'is_open' => 'boolean',
         'alternate_weeks_only' => 'boolean',
     ];
