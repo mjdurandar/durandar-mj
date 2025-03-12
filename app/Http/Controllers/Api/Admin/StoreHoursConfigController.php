@@ -12,7 +12,7 @@ class StoreHoursConfigController extends Controller
 {
     public function index(): JsonResponse
     {
-        $configs = StoreHoursConfig::orderByRaw('FIELD(day_of_week, "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")')
+        $configs = StoreHoursConfig::orderByRaw("FIELD(day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')")
             ->get();
 
         return response()->json($configs);
@@ -31,7 +31,34 @@ class StoreHoursConfigController extends Controller
 
     public function update(StoreHoursConfigRequest $request, StoreHoursConfig $config): JsonResponse
     {
-        $config->update($request->validated());
+        $validated = $request->validated();
+
+        // Convert time strings to proper format
+        if (isset($validated['opening_time'])) {
+            $validated['opening_time'] = date('H:i:s', strtotime($validated['opening_time']));
+        }
+        if (isset($validated['closing_time'])) {
+            $validated['closing_time'] = date('H:i:s', strtotime($validated['closing_time']));
+        }
+        if (isset($validated['lunch_break_start'])) {
+            $validated['lunch_break_start'] = date('H:i:s', strtotime($validated['lunch_break_start']));
+        }
+        if (isset($validated['lunch_break_end'])) {
+            $validated['lunch_break_end'] = date('H:i:s', strtotime($validated['lunch_break_end']));
+        }
+
+        // Only allow alternate weeks for Saturday
+        if (isset($validated['alternate_weeks_only']) && $validated['alternate_weeks_only'] && $config->day_of_week !== 'Saturday') {
+            return response()->json([
+                'message' => 'Alternate weeks can only be set for Saturday',
+                'errors' => [
+                    'alternate_weeks_only' => ['Alternate weeks can only be set for Saturday']
+                ]
+            ], 422);
+        }
+
+        $config->update($validated);
+
         return response()->json($config);
     }
 

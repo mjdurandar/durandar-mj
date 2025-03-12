@@ -19,29 +19,21 @@
                 <div class="flex items-center space-x-2">
                     <div :class="[
                         'w-3 h-3 rounded-full',
-                        storeStatus.isOpen && !storeStatus.isLunchBreak ? 'bg-green-500' : 'bg-red-500'
+                        storeStatus.is_open ? 'bg-green-500' : 'bg-red-500'
                     ]"></div>
-                    <span class="font-medium">
-                        {{ getStatusMessage }}
+                    <span class="font-medium" :class="storeStatus.is_open ? 'text-green-600' : 'text-red-600'">
+                        {{ storeStatus.is_open ? 'Open' : 'Closed' }}
                     </span>
                 </div>
 
-                <!-- Next Opening Time -->
-                <div v-if="!storeStatus.isOpen || storeStatus.isLunchBreak" class="mt-2 text-sm text-gray-600">
-                    {{ getNextOpeningMessage }}
+                <!-- Hours Details -->
+                <div class="mt-2 text-sm text-gray-600">
+                    {{ storeStatus.message }}
                 </div>
 
-                <!-- Today's Hours -->
-                <div v-if="hours.length > 0" class="mt-4">
-                    <h3 class="text-sm font-medium text-gray-700">Hours:</h3>
-                    <div class="mt-1 space-y-1">
-                        <div class="text-sm text-gray-600">
-                            Open: {{ formatTime(hours[0].open) }} - {{ formatTime(hours[0].close) }}
-                        </div>
-                        <div v-if="hours[1]" class="text-sm text-gray-600">
-                            Lunch Break: {{ formatTime(hours[1].open) }} - {{ formatTime(hours[1].close) }}
-                        </div>
-                    </div>
+                <!-- Next Opening Time -->
+                <div v-if="!storeStatus.is_open && storeStatus.next_opening_friendly" class="mt-2 text-sm text-gray-600">
+                    Next opening: {{ storeStatus.next_opening_friendly }}
                 </div>
             </div>
         </div>
@@ -55,42 +47,13 @@ import { format, parseISO } from 'date-fns'
 
 const selectedDate = ref(new Date().toISOString().split('T')[0])
 const storeStatus = ref(null)
-const hours = ref([])
 
 const today = computed(() => new Date().toISOString().split('T')[0])
 
-const getStatusMessage = computed(() => {
-    if (!storeStatus.value) return ''
-    if (storeStatus.value.isLunchBreak) return 'Currently on Lunch Break'
-    return storeStatus.value.isOpen ? 'Open' : 'Closed'
-})
-
-const getNextOpeningMessage = computed(() => {
-    if (!storeStatus.value || !storeStatus.value.nextOpeningTime) return ''
-    if (storeStatus.value.isLunchBreak) {
-        return `Reopening at ${formatTime(storeStatus.value.nextOpeningTime)}`
-    }
-    return `Next opening time: ${formatTime(storeStatus.value.nextOpeningTime)}`
-})
-
-const formatTime = (time) => {
-    if (!time) return ''
-    // Convert 24h format to 12h format
-    const [hours, minutes] = time.split(':')
-    const date = new Date()
-    date.setHours(parseInt(hours))
-    date.setMinutes(parseInt(minutes))
-    return format(date, 'h:mm a')
-}
-
 const checkStoreStatus = async () => {
     try {
-        const [statusResponse, hoursResponse] = await Promise.all([
-            axios.get(`/api/store-hours/status?date=${selectedDate.value}`),
-            axios.get(`/api/store-hours/today?date=${selectedDate.value}`)
-        ])
-        storeStatus.value = statusResponse.data
-        hours.value = hoursResponse.data
+        const response = await axios.get(`/api/store-hours/check-date/${selectedDate.value}`)
+        storeStatus.value = response.data
     } catch (error) {
         console.error('Error fetching store status:', error)
     }
